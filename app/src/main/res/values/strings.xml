@@ -21,11 +21,11 @@
 
     <string name="drawer_label_inicio">Início</string>
     <string name="drawer_label_meus_pedidos">Meus Pedidos</string>
+    <string name="drawer_label_meus_pets">Meus Pets</string>
     <string name="drawer_label_perfil">Perfil</string>
     <string name="drawer_label_configuracoes">Configurações</string>
     <string name="drawer_label_avaliar">Avaliar</string>
     <string name="drawer_label_quem_somos">Quem somos</string>
-    <string name="drawer_label_contato">Contato</string>
-    <string name="drawer_label_meus_pets">Meus Pets</string>
+    <string name="drawer_label_logout">Deslogar</string>
 
 </resources>

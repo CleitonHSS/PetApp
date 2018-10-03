@@ -17,15 +17,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
+import br.com.ipet.IPetApplication;
 import br.com.ipet.R;
 import br.com.ipet.infrastructure.image.picasso.transform.CircleTransform;
 import br.com.ipet.view.fragment.TabFragment;
 import br.com.ipet.view.fragment.drawer.ConfiguracoesFragment;
-import br.com.ipet.view.fragment.drawer.ContatoFragment;
 import br.com.ipet.view.fragment.drawer.MeusPedidosFragment;
 import br.com.ipet.view.fragment.drawer.MeusPetsFragment;
 import br.com.ipet.view.fragment.drawer.PerfilFragment;
@@ -61,13 +62,14 @@ public class MenuActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment selectedFragment = selectDrawerItem(menuItem);
 
-                if (menuItem.getItemId() != R.id.nav_item_avaliar) {
+                if (menuItem.getItemId() != R.id.nav_item_avaliar && menuItem.getItemId() != R.id.nav_item_logout) {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentContainer, selectedFragment)
                             .commit();
 
-                    if (menuItem.getItemId() != R.id.nav_item_avaliar) getSupportActionBar().setTitle(menuItem.getTitle());
+                    if (menuItem.getItemId() != R.id.nav_item_avaliar)
+                        getSupportActionBar().setTitle(menuItem.getTitle());
                     navigationView.setCheckedItem(menuItem.getItemId());
                 }
 
@@ -81,8 +83,7 @@ public class MenuActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-        if(firebaseUser != null)
-        {
+        if (firebaseUser != null) {
             TextView navHeaderText = headerLayout.findViewById(R.id.nav_header_textView);
             ImageView navHeaderImage = headerLayout.findViewById(R.id.nav_header_imageView);
             navHeaderText.setText(firebaseUser.getDisplayName());
@@ -95,7 +96,7 @@ public class MenuActivity extends AppCompatActivity {
         drawerToggle.syncState();
     }
 
-    public Fragment selectDrawerItem(MenuItem menuItem){
+    public Fragment selectDrawerItem(MenuItem menuItem) {
         Fragment fragment = null;
 
         switch (menuItem.getItemId()) {
@@ -127,8 +128,14 @@ public class MenuActivity extends AppCompatActivity {
                 fragment = new QuemSomosFragment();
                 break;
             }
-            case R.id.nav_item_contato: {
-                fragment = new ContatoFragment();
+            case R.id.nav_item_logout: {
+                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                firebaseAuth.signOut();
+                LoginManager.getInstance().logOut();
+                IPetApplication.usuarioLogado = null;
+
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
                 break;
             }
         }
@@ -146,12 +153,12 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    public void hideTabFragmentFooter(){
+    public void hideTabFragmentFooter() {
         TabFragment fragment = (TabFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.hideFooter();
     }
 
-    public void showTabFragmentFooter(){
+    public void showTabFragmentFooter() {
         TabFragment fragment = (TabFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.showFooter();
     }

@@ -14,7 +14,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,11 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         facebookCallbackManager = CallbackManager.Factory.create();
 
-        firebaseAuth.signOut();
-        LoginManager.getInstance().logOut();
-
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        // TODO: usar login do firebase
         if (firebaseUser != null || IPetApplication.usuarioLogado != null) {
             navegarParaMenu();
         }
@@ -101,12 +96,29 @@ public class LoginActivity extends AppCompatActivity {
         entrarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: usar login do firebase
-//                IPetApplication.usuarioLogado = new Usuario();
-//                IPetApplication.usuarioLogado.nome = usuarioEditText.getText().toString();
-//                IPetApplication.usuarioLogado.senha = passwordEditText.getText().toString();
+                String email = usuarioEditText.getText().toString();
+                String senha = passwordEditText.getText().toString();
 
-                navegarParaMenu();
+                if(email == null || email.isEmpty() || senha == null || senha.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "O usuário e a senha não podem estar vazios.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                firebaseAuth.signInWithEmailAndPassword(email, senha)
+                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Timber.d("signInWithCustomToken");
+                                    IPetApplication.usuarioLogado = firebaseAuth.getCurrentUser();
+                                    navegarParaMenu();
+                                } else {
+                                    Timber.w("signInWithCustomToken:failure");
+                                    //TODO: tratar cada erro no login
+                                    Toast.makeText(LoginActivity.this, "Ocorreu um erro ao fazer login.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
         });
     }
@@ -144,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                             navegarParaMenu();
                         } else {
                             Timber.w(task.getException(), "signInWithCredential:failure");
-                            Toast.makeText(LoginActivity.this, "Login com o facebook falhou.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Ocorreu um erro ao fazer login pelo facebook.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

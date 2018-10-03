@@ -148,6 +148,6 @@ public class ServicoFragment extends Fragment implements ServicoView, DatePicker
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-
+        // TODO: setar a data selecionada no serviço
     }
 }
