@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.R;
 import br.com.ipet.model.entities.Pedido;
@@ -17,7 +18,7 @@ import br.com.ipet.model.entities.Pedido;
 public class PedidoListAdapter extends RecyclerView.Adapter<PedidoListAdapter.PedidoListHolder> {
 
     private List<Pedido> pedidoList;
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm");
 
     public PedidoListAdapter(List<Pedido> pedidoList) {
@@ -38,10 +39,10 @@ public class PedidoListAdapter extends RecyclerView.Adapter<PedidoListAdapter.Pe
             Pedido pedido = pedidoList.get(position);
 
             holder.pedidoData.setText(dateFormat.format(pedido.data.toDate()));
-            holder.pedidoProdutoQuantidade.setText("Produto: " + pedido.quantidadeProduto);
-            holder.pedidoProdutoValor.setText("Total: " + numberFormat.format(pedido.valorTotalProduto));
-            holder.pedidoServicoQuantidade.setText("Serviço: " + pedido.quantidadeServico);
-            holder.pedidoServicoValor.setText("Total: " + numberFormat.format(pedido.valorTotalServico));
+            holder.pedidoProdutoQuantidade.setText("Produto: " + pedido.getQuantidadeProduto());
+            holder.pedidoProdutoValor.setText(numberFormat.format(pedido.getValorTotalProduto()));
+            holder.pedidoServicoQuantidade.setText("Serviço: " + pedido.getQuantidadeServico());
+            holder.pedidoServicoValor.setText(numberFormat.format(pedido.getValorTotalServico()));
         }
     }
 

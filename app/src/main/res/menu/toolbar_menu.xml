@@ -15,6 +15,11 @@
             android:title="@string/drawer_label_meus_pedidos" />
 
         <item
+            android:id="@+id/nav_item_meus_pets"
+            android:icon="@drawable/ic_pets"
+            android:title="@string/drawer_label_meus_pets" />
+
+        <item
             android:id="@+id/nav_item_perfil"
             android:icon="@drawable/ic_face"
             android:title="@string/drawer_label_perfil" />

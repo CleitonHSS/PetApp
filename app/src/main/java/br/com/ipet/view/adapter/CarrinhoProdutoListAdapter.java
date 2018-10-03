@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.R;
 import br.com.ipet.model.entities.Produto;
@@ -16,7 +17,7 @@ import br.com.ipet.model.entities.Produto;
 public class CarrinhoProdutoListAdapter extends RecyclerView.Adapter<CarrinhoProdutoListAdapter.ProdutoListHolder> {
 
     private List<Produto> produtoList;
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     public CarrinhoProdutoListAdapter(List<Produto> produtoList) {
         this.produtoList = produtoList;

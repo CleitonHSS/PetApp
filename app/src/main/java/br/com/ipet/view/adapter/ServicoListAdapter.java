@@ -11,6 +11,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.R;
 import br.com.ipet.infrastructure.requesters.ImageRequester;
@@ -19,7 +20,7 @@ import br.com.ipet.model.entities.Servico;
 public class ServicoListAdapter extends RecyclerView.Adapter<ServicoListAdapter.ServicoListHolder> {
 
     private List<Servico> servicoList;
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     private ImageRequester imageRequester;
 
     public ServicoListAdapter(List<Servico> servicoList) {

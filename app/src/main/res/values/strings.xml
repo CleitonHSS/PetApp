@@ -26,5 +26,6 @@
     <string name="drawer_label_avaliar">Avaliar</string>
     <string name="drawer_label_quem_somos">Quem somos</string>
     <string name="drawer_label_contato">Contato</string>
+    <string name="drawer_label_meus_pets">Meus Pets</string>
 
 </resources>

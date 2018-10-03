@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.R;
 import br.com.ipet.model.entities.Servico;
@@ -16,7 +17,7 @@ import br.com.ipet.model.entities.Servico;
 public class CarrinhoServicoListAdapter extends RecyclerView.Adapter<CarrinhoServicoListAdapter.ServicoListHolder> {
 
     private List<Servico> servicoList;
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     public CarrinhoServicoListAdapter(List<Servico> servicoList) {
         this.servicoList = servicoList;

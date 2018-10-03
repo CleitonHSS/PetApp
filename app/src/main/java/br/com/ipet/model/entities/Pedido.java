@@ -1,18 +1,18 @@
 package br.com.ipet.model.entities;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@IgnoreExtraProperties
 public class Pedido {
+    @Exclude
     public String id;
     public String usuarioId;
     public Timestamp data;
-    public int quantidadeProduto;
-    public int quantidadeServico;
-    public float valorTotalProduto;
-    public float valorTotalServico;
 
     public List<Produto> produtoList = new ArrayList<>();
     public List<Servico> servicoList = new ArrayList<>();

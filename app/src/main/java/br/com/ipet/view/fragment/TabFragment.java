@@ -118,10 +118,6 @@ public class TabFragment extends Fragment implements TabView {
                 Pedido pedido = IPetApplication.carrinho.pedido;
                 pedido.usuarioId = IPetApplication.usuarioLogado.getUid();
                 pedido.data = new Timestamp(currentTime);
-                pedido.quantidadeServico = pedido.getQuantidadeServico();
-                pedido.valorTotalServico = pedido.getValorTotalServico();
-                pedido.quantidadeProduto = pedido.getQuantidadeProduto();
-                pedido.valorTotalProduto = pedido.getValorTotalProduto();
                 pedidoRepository.add(pedido);
             }
         });
@@ -165,7 +161,6 @@ public class TabFragment extends Fragment implements TabView {
         Toast.makeText(getActivity(), "Compra finalizada com sucesso", Toast.LENGTH_SHORT).show();
 
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        setupBottomSheetCarrinho();
     }
 
     public class MenuFragmentAdapter extends FragmentPagerAdapter {
