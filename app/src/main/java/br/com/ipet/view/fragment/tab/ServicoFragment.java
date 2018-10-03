@@ -17,8 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,7 +34,7 @@ import br.com.ipet.view.adapter.ServicoListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ServicoFragment extends Fragment implements ServicoView {
+public class ServicoFragment extends Fragment implements ServicoView, DatePickerDialog.OnDateSetListener {
 
     @BindView(R.id.servico_recycler_view)
     RecyclerView recyclerView;
@@ -43,8 +45,10 @@ public class ServicoFragment extends Fragment implements ServicoView {
 
     BottomSheetDialog bottomSheetDialog;
     MaterialButton buttonAdicionarAoCarrinho;
+    MaterialButton buttonAgendar;
 
     private MenuActivity menuActivity;
+    private DatePickerDialog datePickerDialog;
     private final ServicoRepository servicoRepository = new ServicoRepository(this);
     private final ImageRequester imageRequester = ImageRequester.getInstance();
     private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
@@ -82,6 +86,17 @@ public class ServicoFragment extends Fragment implements ServicoView {
                 }
             }
         });
+
+        setupDatepickerDialog();
+    }
+
+    private void setupDatepickerDialog(){
+        Calendar now = Calendar.getInstance();
+        datePickerDialog = DatePickerDialog.newInstance(this, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.setVersion(DatePickerDialog.Version.VERSION_1);
+        datePickerDialog.setOkColor("white");
+        datePickerDialog.setCancelColor("white");
+        datePickerDialog.setLocale(new Locale("pt", "BR"));
     }
 
     @Override
@@ -109,6 +124,13 @@ public class ServicoFragment extends Fragment implements ServicoView {
                 bottomSheetDialog.hide();
             }
         });
+        buttonAgendar = sheetView.findViewById(R.id.button_agendar);
+        buttonAgendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show(getActivity().getFragmentManager(), "Datepickerdialog");
+            }
+        });
         NetworkImageView servicoImagem = sheetView.findViewById(R.id.servico_imagem);
         TextView servicoTitulo = sheetView.findViewById(R.id.servico_titulo);
         TextView servicoPreco = sheetView.findViewById(R.id.servico_preco);
@@ -122,5 +144,10 @@ public class ServicoFragment extends Fragment implements ServicoView {
         bottomSheetDialog = new BottomSheetDialog(getActivity());
         bottomSheetDialog.setContentView(sheetView);
         bottomSheetDialog.show();
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+
     }
 }

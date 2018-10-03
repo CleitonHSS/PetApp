@@ -73,6 +73,15 @@
                 android:text="Descrição qualquer do servico que seja um texto bem grande para demonstração no design editor"
                 android:textSize="15sp" />
 
+            <android.support.design.button.MaterialButton
+                android:id="@+id/button_agendar"
+                style="@style/Widget.PetApp.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="Agendar"
+                app:icon="@drawable/ic_assignment" />
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
