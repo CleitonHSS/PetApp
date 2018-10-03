@@ -17,15 +17,15 @@ public class Pedido {
     public List<Produto> produtoList = new ArrayList<>();
     public List<Servico> servicoList = new ArrayList<>();
 
-    public int quantidadeProduto() {
+    public int getQuantidadeProduto() {
         return produtoList.size();
     }
 
-    public int quantidadeServico() {
+    public int getQuantidadeServico() {
         return servicoList.size();
     }
 
-    public int valorTotalProduto() {
+    public int getValorTotalProduto() {
         int total = 0;
         for (Produto produto : produtoList) {
             total += produto.preco;
@@ -34,7 +34,7 @@ public class Pedido {
         return total;
     }
 
-    public int valorTotalServico() {
+    public int getValorTotalServico() {
         int total = 0;
         for (Servico servico : servicoList) {
             total += servico.preco;
@@ -60,6 +60,6 @@ public class Pedido {
     }
 
     public boolean isEmpty() {
-        return (quantidadeProduto() + quantidadeServico()) == 0;
+        return (getQuantidadeProduto() + getQuantidadeServico()) == 0;
     }
 }

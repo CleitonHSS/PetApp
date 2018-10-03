@@ -16,16 +16,22 @@ import java.util.List;
 
 import br.com.ipet.IPetApplication;
 import br.com.ipet.model.entities.Pedido;
+import br.com.ipet.view.fragment.TabView;
 import br.com.ipet.view.fragment.drawer.MeusPedidosView;
 import timber.log.Timber;
 
 public class PedidoRepository extends BaseRepository {
 
-    private MeusPedidosView view;
+    private MeusPedidosView meusPedidosView;
+    private TabView tabView;
     public static final String COLLECTION_PATH = "pedidos";
 
-    public PedidoRepository(MeusPedidosView view) {
-        this.view = view;
+    public PedidoRepository(MeusPedidosView meusPedidosView) { // XGH por não ter usado arquitetura MVP
+        this.meusPedidosView = meusPedidosView;
+    }
+
+    public PedidoRepository(TabView tabView){ // XGH por não ter usado arquitetura MVP
+        this.tabView = tabView;
     }
 
     public void getAll() {
@@ -40,51 +46,15 @@ public class PedidoRepository extends BaseRepository {
                         for (DocumentSnapshot pedidoSnapshot : task.getResult()) {
                             final Pedido pedido = pedidoSnapshot.toObject(Pedido.class);
                             pedido.id = pedidoSnapshot.getId();
-//                            pedidoSnapshot.getReference().collection(ProdutoRepository.COLLECTION_PATH)
-//                                    .get()
-//                                    .addOnCompleteListener(
-//                                            new OnCompleteListener<QuerySnapshot>() {
-//                                                @Override
-//                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                                    if (!task.isSuccessful()) { return; }
-//
-//                                                    for (DocumentSnapshot produtoSnapshot : task.getResult()) {
-//                                                        if (produtoSnapshot.exists()) {
-//                                                            Produto produto = produtoSnapshot.toObject(Produto.class);
-//                                                            produto.id = produtoSnapshot.getId();
-//                                                            pedido.produtoList.add(produto);
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                    );
-//                            pedidoSnapshot.getReference().collection(ServicoRepository.COLLECTION_PATH)
-//                                    .get()
-//                                    .addOnCompleteListener(
-//                                            new OnCompleteListener<QuerySnapshot>() {
-//                                                @Override
-//                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                                    if (!task.isSuccessful()) { return; }
-//
-//                                                    for (DocumentSnapshot servicoSnapshot : task.getResult()) {
-//                                                        if (servicoSnapshot.exists()) {
-//                                                            Servico servico = servicoSnapshot.toObject(Servico.class);
-//                                                            servico.id = servicoSnapshot.getId();
-//                                                            pedido.servicoList.add(servico);
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                    );
                             pedidoList.add(pedido);
                         }
 
-                        view.onLoadPedidos(pedidoList);
+                        meusPedidosView.onLoadPedidos(pedidoList);
                     }
                 });
     }
 
-    private void add(Pedido pedido) {
+    public void add(Pedido pedido) {
 
         getDatabase().collection(COLLECTION_PATH)
                 .add(pedido)
@@ -92,6 +62,7 @@ public class PedidoRepository extends BaseRepository {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Timber.d("Pedido adicionado com ID: %s", documentReference.getId());
+                        tabView.onAddPedido();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.button.MaterialButton;
-import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,32 +19,50 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.firebase.Timestamp;
+
+import java.util.Calendar;
+import java.util.Date;
+
 import br.com.ipet.IPetApplication;
 import br.com.ipet.R;
-import br.com.ipet.infrastructure.animation.AnimationUtil;
+import br.com.ipet.model.entities.Pedido;
 import br.com.ipet.model.entities.Produto;
 import br.com.ipet.model.entities.Servico;
+import br.com.ipet.model.repository.PedidoRepository;
 import br.com.ipet.view.adapter.CarrinhoProdutoListAdapter;
 import br.com.ipet.view.adapter.CarrinhoServicoListAdapter;
 import br.com.ipet.view.fragment.tab.ProdutoFragment;
 import br.com.ipet.view.fragment.tab.ServicoFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class TabFragment extends Fragment {
+public class TabFragment extends Fragment implements TabView {
 
     @BindView(R.id.tabs)
     public TabLayout tabLayout;
     @BindView(R.id.viewPager)
     public ViewPager viewPager;
-    @BindView(R.id.footer_carrinho)
-
-    public RelativeLayout footerCarrinho;
-    public BottomSheetDialog bottomSheetDialog;
+    @BindView(R.id.bottom_sheet_carrinho)
+    public RelativeLayout layoutBottomSheet;
+    @BindView(R.id.button_finalizar_compra)
     public MaterialButton buttonFinalizarCompra;
+    @BindView(R.id.carrinho_produto_recycler_view)
+    public RecyclerView produtoRecyclerView;
+    @BindView(R.id.carrinho_servico_recycler_view)
+    public RecyclerView servicoRecyclerView;
+    @BindView(R.id.footer_carrinho)
+    public RelativeLayout footerCarrinho;
+
+    public BottomSheetBehavior sheetBehavior;
+
+//    public BottomSheetDialog bottomSheetDialog;
 
     CarrinhoProdutoListAdapter carrinhoProdutoAdapter;
     CarrinhoServicoListAdapter carrinhoServicoAdapter;
+
+    PedidoRepository pedidoRepository = new PedidoRepository(this);
 
 
     @Override
@@ -70,14 +88,11 @@ public class TabFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupBottomSheetCarrinho();
-        setupCarrinho();
 
 //        consumirApiInfnet();
     }
 
     private void setupBottomSheetCarrinho() {
-        View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_carrinho, null);
-
         // TODO: Remover após implementação do adicionar produto/serviço ao carrinho
         Produto produtoTeste = new Produto();
         produtoTeste.preco = 30;
@@ -92,52 +107,65 @@ public class TabFragment extends Fragment {
         IPetApplication.carrinho.pedido.adicionarServico(servicoTeste);
         // TODO: Remover após implementação do adicionar produto/serviço ao carrinho
 
-        buttonFinalizarCompra = sheetView.findViewById(R.id.button_finalizar_compra);
+        sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         buttonFinalizarCompra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: salvar pedido no firebase e executar código abaixo no callback
-                IPetApplication.carrinho.limparCarrinho();
-                Toast.makeText(getActivity(), "Compra finalizada com sucesso", Toast.LENGTH_SHORT).show();
+                Date currentTime = Calendar.getInstance().getTime();
 
-                bottomSheetDialog.hide();
-                hideFooter();
-                setupBottomSheetCarrinho();
+                Pedido pedido = IPetApplication.carrinho.pedido;
+                pedido.usuarioId = IPetApplication.usuarioLogado.getUid();
+                pedido.data = new Timestamp(currentTime);
+                pedido.quantidadeServico = pedido.getQuantidadeServico();
+                pedido.valorTotalServico = pedido.getValorTotalServico();
+                pedido.quantidadeProduto = pedido.getQuantidadeProduto();
+                pedido.valorTotalProduto = pedido.getValorTotalProduto();
+                pedidoRepository.add(pedido);
             }
         });
 
         carrinhoProdutoAdapter = new CarrinhoProdutoListAdapter(IPetApplication.carrinho.pedido.produtoList);
-        RecyclerView produtoRecyclerView = sheetView.findViewById(R.id.carrinho_produto_recycler_view);
         produtoRecyclerView.setHasFixedSize(true);
         produtoRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         produtoRecyclerView.setAdapter(carrinhoProdutoAdapter);
 
         carrinhoServicoAdapter = new CarrinhoServicoListAdapter(IPetApplication.carrinho.pedido.servicoList);
-        RecyclerView servicoRecyclerView = sheetView.findViewById(R.id.carrinho_servico_recycler_view);
         servicoRecyclerView.setHasFixedSize(true);
         servicoRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         servicoRecyclerView.setAdapter(carrinhoServicoAdapter);
-
-        bottomSheetDialog = new BottomSheetDialog(getActivity());
-        bottomSheetDialog.setContentView(sheetView);
     }
 
-    private void setupCarrinho(){
-
-        footerCarrinho.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.show();
-            }
-        });
+    @OnClick(R.id.footer_carrinho)
+    public void onClickCarrinho() {
+        switch (sheetBehavior.getState()) {
+            case BottomSheetBehavior.STATE_COLLAPSED:
+                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                break;
+            case BottomSheetBehavior.STATE_EXPANDED:
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                break;
+        }
     }
 
-    public void hideFooter(){
-        AnimationUtil.slideDown(footerCarrinho);
+    public void hideFooter() {
+//        AnimationUtil.slideDown(footerCarrinho);
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-    public void showFooter(){
-        AnimationUtil.slideUp(footerCarrinho);
+    public void showFooter() {
+//        AnimationUtil.slideUp(footerCarrinho);
+        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    @Override
+    public void onAddPedido() {
+        IPetApplication.carrinho.limparCarrinho();
+        Toast.makeText(getActivity(), "Compra finalizada com sucesso", Toast.LENGTH_SHORT).show();
+
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        setupBottomSheetCarrinho();
     }
 
     public class MenuFragmentAdapter extends FragmentPagerAdapter {
