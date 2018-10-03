@@ -10,5 +10,5 @@
     <color name="loginPageBackgroundColor">#FFF</color>
     <color name="colorControlActivated">#299332</color>
     <color name="meanPageBackgroundColor">#f6edff</color>
-    <color name="ic_launcher_background">#81FF81</color>
+    <color name="ic_launcher_background">#ffffff</color>
 </resources>

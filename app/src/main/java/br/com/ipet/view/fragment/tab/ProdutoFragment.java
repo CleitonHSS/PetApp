@@ -3,14 +3,20 @@ package br.com.ipet.view.fragment.tab;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.card.MaterialCardView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.List;
@@ -30,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProdutoFragment extends Fragment implements ProdutoView {
+public class ProdutoFragment extends Fragment implements ProdutoView, View.OnClickListener {
 
     @BindView(R.id.produto_recycler_view)
     RecyclerView recyclerView;
@@ -38,6 +44,12 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
     ProgressBar progressBar;
     @BindView(R.id.produto_scroll_view)
     NestedScrollView scrollView;
+    @BindView(R.id.prod_detail)
+    RelativeLayout detail;
+
+    ProdutoListAdapter adapter;
+    Boolean is_in_action;
+
 
     MenuActivity menuActivity;
     ProdutoRepository produtoRepository = new ProdutoRepository(this);
@@ -47,6 +59,7 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
         menuActivity = ((MenuActivity) getActivity());
     }
 
@@ -54,7 +67,15 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_produto, container, false);
         ButterKnife.bind(this, view);
-
+        detail = view.findViewById(R.id.prod_detail);
+        detail.setVisibility(View.GONE);
+        detail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                detail.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
+            }
+        });
         return view;
     }
 
@@ -76,12 +97,12 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
             }
         });
 
-//        consumirApiInfnet();
+//  consumirApiInfnet();
     }
 
     @Override
     public void onLoadProdutos(List<Produto> produtoList) {
-        ProdutoListAdapter adapter = new ProdutoListAdapter(produtoList);
+        adapter = new ProdutoListAdapter(produtoList, this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -106,4 +127,13 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
             }
         });
     }
+
+
+    @Override
+    public void onClick(View v) {
+        detail.setVisibility(View.VISIBLE);
+        scrollView.setVisibility(View.GONE);
+    }
+
+
 }
