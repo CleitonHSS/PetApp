@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6a1b9a</color>
+    <color name="colorPrimaryDark">#38006b</color>
+    <color name="colorPrimaryLight">#9c4dcc</color>
+    <color name="colorAccent">#38006b</color>
+    <color name="textColorPrimary">#38006b</color>
+    <color name="textColorPrimaryLight">#fff</color>
+    <color name="toolbarIconColor">#fff</color>
+    <color name="loginPageBackgroundColor">#FFF</color>
+    <color name="colorControlActivated">#299332</color>
+    <color name="meanPageBackgroundColor">#f6edff</color>
+    <color name="ic_launcher_background">#81FF81</color>
+</resources>

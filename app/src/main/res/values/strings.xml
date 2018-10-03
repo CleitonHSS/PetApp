@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">IPet</string>
+
+    <string name="facebook_app_id">332830167473125</string>
+    <string name="fb_login_protocol_scheme">fb332830167473125</string>
+
+    <string name="login_hint_username">Usuário</string>
+    <string name="login_hint_password">Senha</string>
+    <string name="login_button_next">Entrar</string>
+    <string name="login_button_cancel">Criar perfil</string>
+    <string name="login_error_password">A senha deve conter ao menos 8 caracteres.</string>
+
+    <string name="cadastro_title">Novo perfil</string>
+    <string name="cadastro_hint_email">E-mail</string>
+    <string name="cadastro_hint_confirmar_senha">Confirmar senha</string>
+    <string name="cadastro_button_cadastrar">Criar perfil</string>
+    <string name="cadastro_button_voltar">Voltar</string>
+
+    <string name="card_produto_titulo">Título</string>
+    <string name="card_produto_descricao">Texto Secundário</string>
+
+    <string name="drawer_label_inicio">Início</string>
+    <string name="drawer_label_meus_pedidos">Meus Pedidos</string>
+    <string name="drawer_label_perfil">Perfil</string>
+    <string name="drawer_label_configuracoes">Configurações</string>
+    <string name="drawer_label_avaliar">Avaliar</string>
+    <string name="drawer_label_quem_somos">Quem somos</string>
+    <string name="drawer_label_contato">Contato</string>
+
+</resources>
