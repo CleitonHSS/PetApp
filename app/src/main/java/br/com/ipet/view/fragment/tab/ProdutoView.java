@@ -6,4 +6,5 @@ import br.com.ipet.model.entities.Produto;
 
 public interface ProdutoView {
     void onLoadProdutos(List<Produto> produtoList);
+    void onProdutoItemClick(Produto produto);
 }

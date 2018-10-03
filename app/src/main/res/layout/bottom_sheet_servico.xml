@@ -1,46 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet_servico"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
     android:background="@color/meanPageBackgroundColor"
-    android:orientation="vertical"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <LinearLayout
-        android:id="@+id/fragment_history_bottom_sheet_edit"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/button_adicionar_ao_carrinho"
+        android:layout_alignParentTop="true"
+        android:elevation="6dp"
+        app:contentInsetStart="0dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="16dp"
-            android:text="teste1" />
-    </LinearLayout>
+            android:minHeight="25dp"
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/fragment_history_bottom_sheet_delete"
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/servico_imagem"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Título:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/servico_titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Nome do servico"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Preço:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/servico_preco"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="R$ 100,00"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Descrição:"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/servico_descricao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Descrição qualquer do servico que seja um texto bem grande para demonstração no design editor"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/button_adicionar_ao_carrinho"
+        style="@style/Widget.PetApp.Button"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:text="Adicionar ao Carrinho" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="16dp"
-            android:text="teste2" />
-    </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

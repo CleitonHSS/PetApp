@@ -6,4 +6,5 @@ import br.com.ipet.model.entities.Servico;
 
 public interface ServicoView {
     void onLoadServicos(List<Servico> servicoList);
+    void onServicoItemClick(Servico servico);
 }

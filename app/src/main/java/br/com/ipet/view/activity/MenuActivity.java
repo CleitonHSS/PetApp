@@ -155,4 +155,9 @@ public class MenuActivity extends AppCompatActivity {
         TabFragment fragment = (TabFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.showFooter();
     }
+
+    public void atualizarCarrinho() {
+        TabFragment fragment = (TabFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        fragment.atualizarCarrinho();
+    }
 }

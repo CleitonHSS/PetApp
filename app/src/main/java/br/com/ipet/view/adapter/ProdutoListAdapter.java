@@ -16,15 +16,18 @@ import java.util.Locale;
 import br.com.ipet.R;
 import br.com.ipet.infrastructure.requesters.ImageRequester;
 import br.com.ipet.model.entities.Produto;
+import br.com.ipet.view.fragment.tab.ProdutoView;
 
 public class ProdutoListAdapter extends RecyclerView.Adapter<ProdutoListAdapter.ProdutoListHolder> {
 
-    private List<Produto> produtoList;
-    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-    private ImageRequester imageRequester;
+    private final ProdutoView produtoView;
+    private final List<Produto> produtoList;
+    private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    private final ImageRequester imageRequester;
 
-    public ProdutoListAdapter(List<Produto> produtoList) {
+    public ProdutoListAdapter(List<Produto> produtoList, ProdutoView produtoView) {
         this.produtoList = produtoList;
+        this.produtoView = produtoView;
         imageRequester = ImageRequester.getInstance();
     }
 
@@ -51,17 +54,23 @@ public class ProdutoListAdapter extends RecyclerView.Adapter<ProdutoListAdapter.
         return produtoList.size();
     }
 
-    class ProdutoListHolder extends RecyclerView.ViewHolder {
+    class ProdutoListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         NetworkImageView produtoImagem;
         TextView produtoTitulo;
         TextView produtoPreco;
 
-        ProdutoListHolder(@NonNull View itemView) {
+        ProdutoListHolder(View itemView) {
             super(itemView);
             produtoImagem = itemView.findViewById(R.id.produto_imagem);
             produtoTitulo = itemView.findViewById(R.id.produto_titulo);
             produtoPreco = itemView.findViewById(R.id.produto_preco);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            produtoView.onProdutoItemClick(produtoList.get(getAdapterPosition()));
         }
     }
 }

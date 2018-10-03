@@ -3,6 +3,8 @@ package br.com.ipet.view.fragment.tab;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.button.MaterialButton;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,24 +13,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
+
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.IPetApplication;
 import br.com.ipet.R;
-import br.com.ipet.infrastructure.network.retrofit.RetrofitClientInstance;
-import br.com.ipet.infrastructure.network.retrofit.service.InfnetService;
-import br.com.ipet.model.entities.InfnetTarefa;
+import br.com.ipet.infrastructure.requesters.ImageRequester;
 import br.com.ipet.model.entities.Produto;
 import br.com.ipet.model.repository.ProdutoRepository;
 import br.com.ipet.view.activity.MenuActivity;
 import br.com.ipet.view.adapter.ProdutoListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ProdutoFragment extends Fragment implements ProdutoView {
 
@@ -39,8 +41,13 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
     @BindView(R.id.produto_scroll_view)
     NestedScrollView scrollView;
 
-    MenuActivity menuActivity;
-    ProdutoRepository produtoRepository = new ProdutoRepository(this);
+    BottomSheetDialog bottomSheetDialog;
+    MaterialButton buttonAdicionarAoCarrinho;
+
+    private MenuActivity menuActivity;
+    private final ProdutoRepository produtoRepository = new ProdutoRepository(this);
+    private final ImageRequester imageRequester = ImageRequester.getInstance();
+    private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,13 +82,11 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
                 }
             }
         });
-
-//        consumirApiInfnet();
     }
 
     @Override
     public void onLoadProdutos(List<Produto> produtoList) {
-        ProdutoListAdapter adapter = new ProdutoListAdapter(produtoList);
+        ProdutoListAdapter adapter = new ProdutoListAdapter(produtoList, this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -90,20 +95,32 @@ public class ProdutoFragment extends Fragment implements ProdutoView {
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    private void consumirApiInfnet() {
-        // TODO: Exemplo de consumo de api com o retrofit. Remover quando usar numa api do app
-        InfnetService service = RetrofitClientInstance.getInstance().create(InfnetService.class);
-        Call<List<InfnetTarefa>> call = service.getAllPhotos();
-        call.enqueue(new Callback<List<InfnetTarefa>>() {
-            @Override
-            public void onResponse(Call<List<InfnetTarefa>> call, Response<List<InfnetTarefa>> response) {
-                response.body();
-            }
+    @Override
+    public void onProdutoItemClick(final Produto produto) {
+        View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_produto, null);
 
+        buttonAdicionarAoCarrinho = sheetView.findViewById(R.id.button_adicionar_ao_carrinho);
+        buttonAdicionarAoCarrinho.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFailure(Call<List<InfnetTarefa>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Produto adicionado com sucesso", Toast.LENGTH_SHORT).show();
+                IPetApplication.carrinho.pedido.adicionarProduto(produto);
+                menuActivity.atualizarCarrinho();
+                bottomSheetDialog.hide();
             }
         });
+        NetworkImageView produtoImagem = sheetView.findViewById(R.id.produto_imagem);
+        TextView produtoTitulo = sheetView.findViewById(R.id.produto_titulo);
+        TextView produtoPreco = sheetView.findViewById(R.id.produto_preco);
+        TextView produtoDescricao = sheetView.findViewById(R.id.produto_descricao);
+
+        imageRequester.setImageFromUrl(produtoImagem, produto.url);
+        produtoTitulo.setText(produto.titulo);
+        produtoPreco.setText(numberFormat.format(produto.preco));
+        produtoDescricao.setText(""); // TODO: adicionar descrição ao produto
+
+        bottomSheetDialog = new BottomSheetDialog(getActivity());
+        bottomSheetDialog.setContentView(sheetView);
+        bottomSheetDialog.show();
     }
 }

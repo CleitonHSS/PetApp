@@ -3,6 +3,8 @@ package br.com.ipet.view.fragment.tab;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.button.MaterialButton;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,11 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
+
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.ipet.IPetApplication;
 import br.com.ipet.R;
+import br.com.ipet.infrastructure.requesters.ImageRequester;
 import br.com.ipet.model.entities.Servico;
 import br.com.ipet.model.repository.ServicoRepository;
 import br.com.ipet.view.activity.MenuActivity;
@@ -32,8 +41,13 @@ public class ServicoFragment extends Fragment implements ServicoView {
     @BindView(R.id.servico_scroll_view)
     NestedScrollView scrollView;
 
-    MenuActivity menuActivity;
-    ServicoRepository servicoRepository = new ServicoRepository(this);
+    BottomSheetDialog bottomSheetDialog;
+    MaterialButton buttonAdicionarAoCarrinho;
+
+    private MenuActivity menuActivity;
+    private final ServicoRepository servicoRepository = new ServicoRepository(this);
+    private final ImageRequester imageRequester = ImageRequester.getInstance();
+    private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,12 +86,41 @@ public class ServicoFragment extends Fragment implements ServicoView {
 
     @Override
     public void onLoadServicos(List<Servico> servicoList) {
-        ServicoListAdapter adapter = new ServicoListAdapter(servicoList);
+        ServicoListAdapter adapter = new ServicoListAdapter(servicoList, this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onServicoItemClick(final Servico servico) {
+        View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_servico, null);
+
+        buttonAdicionarAoCarrinho = sheetView.findViewById(R.id.button_adicionar_ao_carrinho);
+        buttonAdicionarAoCarrinho.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Serviço adicionado com sucesso", Toast.LENGTH_SHORT).show();
+                IPetApplication.carrinho.pedido.adicionarServico(servico);
+                menuActivity.atualizarCarrinho();
+                bottomSheetDialog.hide();
+            }
+        });
+        NetworkImageView servicoImagem = sheetView.findViewById(R.id.servico_imagem);
+        TextView servicoTitulo = sheetView.findViewById(R.id.servico_titulo);
+        TextView servicoPreco = sheetView.findViewById(R.id.servico_preco);
+        TextView servicoDescricao = sheetView.findViewById(R.id.servico_descricao);
+
+        imageRequester.setImageFromUrl(servicoImagem, servico.url);
+        servicoTitulo.setText(servico.titulo);
+        servicoPreco.setText(numberFormat.format(servico.preco));
+        servicoDescricao.setText(""); // TODO: adicionar descrição ao serviço
+
+        bottomSheetDialog = new BottomSheetDialog(getActivity());
+        bottomSheetDialog.setContentView(sheetView);
+        bottomSheetDialog.show();
     }
 }

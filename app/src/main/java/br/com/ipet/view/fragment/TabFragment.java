@@ -17,18 +17,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import br.com.ipet.IPetApplication;
 import br.com.ipet.R;
 import br.com.ipet.model.entities.Pedido;
-import br.com.ipet.model.entities.Produto;
-import br.com.ipet.model.entities.Servico;
 import br.com.ipet.model.repository.PedidoRepository;
 import br.com.ipet.view.adapter.CarrinhoProdutoListAdapter;
 import br.com.ipet.view.adapter.CarrinhoServicoListAdapter;
@@ -54,16 +55,18 @@ public class TabFragment extends Fragment implements TabView {
     public RecyclerView servicoRecyclerView;
     @BindView(R.id.footer_carrinho)
     public RelativeLayout footerCarrinho;
+    @BindView(R.id.carrinho_quantidade)
+    public TextView carrinhoQuantidade;
+    @BindView(R.id.carrinho_valor)
+    public TextView carrinhoValor;
 
     public BottomSheetBehavior sheetBehavior;
-
-//    public BottomSheetDialog bottomSheetDialog;
 
     CarrinhoProdutoListAdapter carrinhoProdutoAdapter;
     CarrinhoServicoListAdapter carrinhoServicoAdapter;
 
-    PedidoRepository pedidoRepository = new PedidoRepository(this);
-
+    private final PedidoRepository pedidoRepository = new PedidoRepository(this);
+    private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,25 +91,29 @@ public class TabFragment extends Fragment implements TabView {
         super.onViewCreated(view, savedInstanceState);
 
         setupBottomSheetCarrinho();
+    }
 
-//        consumirApiInfnet();
+    @Override
+    public void onAddPedido() {
+        IPetApplication.carrinho.limparCarrinho();
+        Toast.makeText(getActivity(), "Compra finalizada com sucesso", Toast.LENGTH_SHORT).show();
+
+        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    @OnClick(R.id.footer_carrinho)
+    public void onClickCarrinho() {
+        switch (sheetBehavior.getState()) {
+            case BottomSheetBehavior.STATE_COLLAPSED:
+                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                break;
+            case BottomSheetBehavior.STATE_EXPANDED:
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                break;
+        }
     }
 
     private void setupBottomSheetCarrinho() {
-        // TODO: Remover após implementação do adicionar produto/serviço ao carrinho
-        Produto produtoTeste = new Produto();
-        produtoTeste.preco = 30;
-        produtoTeste.titulo = "Coleira";
-        produtoTeste.url = "";
-        IPetApplication.carrinho.pedido.adicionarProduto(produtoTeste);
-
-        Servico servicoTeste = new Servico();
-        servicoTeste.preco = 120;
-        servicoTeste.titulo = "Consulta";
-        servicoTeste.url = "";
-        IPetApplication.carrinho.pedido.adicionarServico(servicoTeste);
-        // TODO: Remover após implementação do adicionar produto/serviço ao carrinho
-
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
@@ -133,34 +140,25 @@ public class TabFragment extends Fragment implements TabView {
         servicoRecyclerView.setAdapter(carrinhoServicoAdapter);
     }
 
-    @OnClick(R.id.footer_carrinho)
-    public void onClickCarrinho() {
-        switch (sheetBehavior.getState()) {
-            case BottomSheetBehavior.STATE_COLLAPSED:
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                break;
-            case BottomSheetBehavior.STATE_EXPANDED:
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                break;
-        }
-    }
-
     public void hideFooter() {
-//        AnimationUtil.slideDown(footerCarrinho);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     public void showFooter() {
-//        AnimationUtil.slideUp(footerCarrinho);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    @Override
-    public void onAddPedido() {
-        IPetApplication.carrinho.limparCarrinho();
-        Toast.makeText(getActivity(), "Compra finalizada com sucesso", Toast.LENGTH_SHORT).show();
+    public void atualizarCarrinho() {
+        Pedido pedido = IPetApplication.carrinho.pedido;
+        carrinhoQuantidade.setText("" + (pedido.getQuantidadeProduto() + pedido.getQuantidadeServico()));
+        carrinhoValor.setText(numberFormat.format(pedido.getValorTotalProduto() + pedido.getValorTotalServico()));
 
-        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        carrinhoProdutoAdapter = new CarrinhoProdutoListAdapter(IPetApplication.carrinho.pedido.produtoList);
+        produtoRecyclerView.setAdapter(carrinhoProdutoAdapter);
+        carrinhoServicoAdapter = new CarrinhoServicoListAdapter(IPetApplication.carrinho.pedido.servicoList);
+        servicoRecyclerView.setAdapter(carrinhoServicoAdapter);
+
+        showFooter();
     }
 
     public class MenuFragmentAdapter extends FragmentPagerAdapter {
